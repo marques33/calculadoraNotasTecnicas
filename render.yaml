@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: calculadora-notas
+    env: python
+    buildCommand: |
+      pip install -r requirements.txt
+      python manage.py migrate --noinput
+      python manage.py collectstatic --noinput
+    startCommand: gunicorn calculadoraNotasTecnicas.wsgi:application --log-file -
+    plan: free
+    envVars:
+      - key: SECRET_KEY
+        sync: false           # definir no dashboard
+      - fromDatabase:
+          name: calc-db
+          property: connectionString
+
+databases:
+  - name: calc-db
+    plan: free
