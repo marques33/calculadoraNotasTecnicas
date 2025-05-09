@@ -1,0 +1,33 @@
+<!-- calculadora_fiscal/templates/calculadora_fiscal/calcular_conta_vinculada.html -->
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static '/styles/style.css' %}">
+    <title>Calculadora de Conta Vinculada</title>
+        
+</head>
+<body>
+    <div class="container">
+        <h1>Calculadora de Conta Vinculada</h1>
+        <form method="post">
+            {% csrf_token %}
+            <label for="salario">Salário do Funcionário:</label>
+            <input type="number" name="salario" required>
+            <label for="quantidade_postos">Quantidade de Postos:</label>
+            <input type="number" name="quantidade_postos" required>
+            <button type="submit">Calcular Conta Vinculada</button>
+        </form>
+
+        {% if resultado is not None %}
+            <div class="result">
+                <h2>Resultado da Conta Vinculada</h2>
+                <p>Valor a ser depositado: R$ {{ resultado|floatformat:2 }}</p>
+            </div>
+        {% endif %}
+        <a href="{% url 'index' %}">Voltar à Página Inicial</a>
+    </div>
+</body>
+</html>

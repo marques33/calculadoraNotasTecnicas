@@ -1,0 +1,178 @@
+<!-- calcular_conta_vinculada.html -->
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="mb-4">Calculadora de Conta Vinculada</h1>
+    <h5 class="text-muted mb-4">Cálculo de provisão (30,83%) sobre salários de funcionários</h5>
+    
+    {% if messages %}
+    <div class="alert alert-danger">
+        {% for message in messages %}
+            {{ message }}
+        {% endfor %}
+    </div>
+    {% endif %}
+    
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                <table class="table table-bordered">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>Função</th>
+                            <th>Salário Base</th>
+                            <th>Quantidade de Postos</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Servente</td>
+                            <td>R$ {{ salarios_base.SERVENTE|floatformat:2 }}</td>
+                            <td>
+                                <input type="number" class="form-control" id="qtd_servente" name="qtd_servente" min="0" value="0">
+                            </td>
+                            <td id="total_servente">R$ 0,00</td>
+                        </tr>
+                        <tr>
+                            <td>Encarregado</td>
+                            <td>R$ {{ salarios_base.ENCARREGADO|floatformat:2 }}</td>
+                            <td>
+                                <input type="number" class="form-control" id="qtd_encarregado" name="qtd_encarregado" min="0" value="0">
+                            </td>
+                            <td id="total_encarregado">R$ 0,00</td>
+                        </tr>
+                        <tr>
+                            <td>Operador de Roçadeira</td>
+                            <td>R$ {{ salarios_base.OPERADOR_ROCADEIRA|floatformat:2 }}</td>
+                            <td>
+                                <input type="number" class="form-control" id="qtd_operador_rocadeira" name="qtd_operador_rocadeira" min="0" value="0">
+                            </td>
+                            <td id="total_operador_rocadeira">R$ 0,00</td>
+                        </tr>
+                        <tr>
+                            <td>Cozinheira</td>
+                            <td>R$ {{ salarios_base.COZINHEIRA|floatformat:2 }}</td>
+                            <td>
+                                <input type="number" class="form-control" id="qtd_cozinheira" name="qtd_cozinheira" min="0" value="0">
+                            </td>
+                            <td id="total_cozinheira">R$ 0,00</td>
+                        </tr>
+                        <tr class="table-primary">
+                            <td colspan="3" class="text-end"><strong>Total:</strong></td>
+                            <td id="total_geral">R$ 0,00</td>
+                        </tr>
+                        <tr class="table-success">
+                            <td colspan="3" class="text-end"><strong>Total x 30,83%:</strong></td>
+                            <td id="total_provisao">R$ 0,00</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <button type="submit" class="btn btn-primary">Calcular</button>
+            </form>
+        </div>
+    </div>
+    
+    {% if total %}
+    <div class="card">
+        <div class="card-header bg-success text-white">
+            <h4>Resultado do Cálculo</h4>
+        </div>
+        <div class="card-body">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Função</th>
+                        <th>Salário Base</th>
+                        <th>Quantidade</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in itens %}
+                    <tr>
+                        <td>{{ item.funcao }}</td>
+                        <td>R$ {{ item.salario_base|floatformat:2 }}</td>
+                        <td>{{ item.quantidade }}</td>
+                        <td>R$ {{ item.total|floatformat:2 }}</td>
+                    </tr>
+                    {% endfor %}
+                    <tr class="table-primary">
+                        <td colspan="3"><strong>Total:</strong></td>
+                        <td><strong>R$ {{ total|floatformat:2 }}</strong></td>
+                    </tr>
+                    <tr class="table-success">
+                        <td colspan="3"><strong>Total x 30,83% (Provisão):</strong></td>
+                        <td><strong>R$ {{ total_provisao|floatformat:2 }}</strong></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+// Script para cálculo instantâneo no frontend
+document.addEventListener('DOMContentLoaded', function() {
+    // Salários base
+    const salarios = {
+        'servente': {{ salarios_base.SERVENTE }},
+        'encarregado': {{ salarios_base.ENCARREGADO }},
+        'operador_rocadeira': {{ salarios_base.OPERADOR_ROCADEIRA }},
+        'cozinheira': {{ salarios_base.COZINHEIRA }}
+    };
+    
+    // Elementos do DOM
+    const inputs = {
+        'servente': document.getElementById('qtd_servente'),
+        'encarregado': document.getElementById('qtd_encarregado'),
+        'operador_rocadeira': document.getElementById('qtd_operador_rocadeira'),
+        'cozinheira': document.getElementById('qtd_cozinheira')
+    };
+    
+    const totais = {
+        'servente': document.getElementById('total_servente'),
+        'encarregado': document.getElementById('total_encarregado'),
+        'operador_rocadeira': document.getElementById('total_operador_rocadeira'),
+        'cozinheira': document.getElementById('total_cozinheira'),
+        'geral': document.getElementById('total_geral'),
+        'provisao': document.getElementById('total_provisao')
+    };
+    
+    // Função para formatar valores monetários
+    function formatarMoeda(valor) {
+        return 'R$ ' + valor.toFixed(2).replace('.', ',');
+    }
+    
+    // Função para calcular totais
+    function calcularTotais() {
+        let totalGeral = 0;
+        
+        // Calcular para cada tipo de funcionário
+        for (const tipo in inputs) {
+            const quantidade = parseInt(inputs[tipo].value) || 0;
+            const salario = salarios[tipo];
+            const total = quantidade * salario;
+            
+            totais[tipo].textContent = formatarMoeda(total);
+            totalGeral += total;
+        }
+        
+        // Atualizar totais gerais
+        totais.geral.textContent = formatarMoeda(totalGeral);
+        totais.provisao.textContent = formatarMoeda(totalGeral * 0.3083);
+    }
+    
+    // Adicionar eventos de mudança
+    for (const tipo in inputs) {
+        inputs[tipo].addEventListener('input', calcularTotais);
+    }
+    
+    // Calcular inicialmente
+    calcularTotais();
+});
+</script>
+{% endblock %}

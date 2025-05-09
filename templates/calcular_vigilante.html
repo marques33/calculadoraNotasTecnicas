@@ -1,0 +1,228 @@
+<!-- calcular_vigilante.html -->
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="mb-4">Calculadora de Vigilantes</h1>
+    <h5 class="text-muted mb-4">Cálculo para diferentes tipos de vigilantes</h5>
+    
+    {% if messages %}
+    <div class="alert alert-danger">
+        {% for message in messages %}
+            {{ message }}
+        {% endfor %}
+    </div>
+    {% endif %}
+    
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="tipo_vigilante">Tipo de Vigilante:</label>
+                            <select class="form-control" id="tipo_vigilante" name="tipo_vigilante" required>
+                                {% for tipo in tipos_vigilante %}
+                                <option value="{{ tipo.codigo }}">{{ tipo.nome }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="quantidade">Quantidade de Vigilantes:</label>
+                            <input type="number" class="form-control" id="quantidade" name="quantidade" min="1" required value="1">
+                        </div>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="salario_base">Salário Base:</label>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">R$</span>
+                                </div>
+                                <input type="text" class="form-control" id="salario_base" name="salario_base" required placeholder="0,00">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="vale_transporte">Vale Transporte:</label>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">R$</span>
+                                </div>
+                                <input type="text" class="form-control" id="vale_transporte" name="vale_transporte" value="0,00">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="vale_alimentacao">Vale Alimentação:</label>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">R$</span>
+                                </div>
+                                <input type="text" class="form-control" id="vale_alimentacao" name="vale_alimentacao" value="0,00">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Adicional de Periculosidade (30%):</label>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">R$</span>
+                                </div>
+                                <input type="text" class="form-control" id="adicional_periculosidade_display" readonly value="0,00">
+                            </div>
+                            <small class="text-muted">Calculado automaticamente (30% do salário base)</small>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Adicional Noturno:</label>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">R$</span>
+                                </div>
+                                <input type="text" class="form-control" id="adicional_noturno_display" readonly value="0,00">
+                            </div>
+                            <small class="text-muted">Calculado automaticamente para vigilantes noturnos</small>
+                        </div>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">Calcular</button>
+            </form>
+        </div>
+    </div>
+    
+    {% if total_bruto %}
+    <div class="card">
+        <div class="card-header bg-success text-white">
+            <h4>Resultado do Cálculo - {{ tipo_vigilante_nome }}</h4>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>Informações por Vigilante</h5>
+                    <table class="table table-bordered">
+                        <tr>
+                            <th>Salário Base</th>
+                            <td>R$ {{ salario_base|floatformat:2 }}</td>
+                        </tr>
+                        <tr>
+                            <th>Adicional de Periculosidade (30%)</th>
+                            <td>R$ {{ adicional_periculosidade|floatformat:2 }}</td>
+                        </tr>
+                        <tr>
+                            <th>Adicional Noturno</th>
+                            <td>R$ {{ adicional_noturno|floatformat:2 }}</td>
+                        </tr>
+                        <tr>
+                            <th>Vale Transporte</th>
+                            <td>R$ {{ vale_transporte|floatformat:2 }}</td>
+                        </tr>
+                        <tr>
+                            <th>Vale Alimentação</th>
+                            <td>R$ {{ vale_alimentacao|floatformat:2 }}</td>
+                        </tr>
+                        <tr class="table-info">
+                            <th>Total por Vigilante</th>
+                            <td>R$ {{ valor_por_funcionario|floatformat:2 }}</td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="col-md-6">
+                    <h5>Totais Gerais</h5>
+                    <table class="table table-bordered">
+                        <tr>
+                            <th>Quantidade de Vigilantes</th>
+                            <td>{{ quantidade }}</td>
+                        </tr>
+                        <tr class="table-success">
+                            <th>Total Bruto</th>
+                            <td>R$ {{ total_bruto|floatformat:2 }}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    
+    <div class="alert alert-info mt-3">
+        <p><strong>Adicionais Automatizados:</strong></p>
+        <ul>
+            <li><strong>Adicional de Periculosidade:</strong> 30% do salário base para todos os tipos de vigilantes</li>
+            <li><strong>Adicional Noturno:</strong> 20% sobre as horas noturnas (calculado automaticamente para vigilantes noturnos)</li>
+        </ul>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Elementos do DOM
+    const tipoVigilanteSelect = document.getElementById('tipo_vigilante');
+    const salarioBaseInput = document.getElementById('salario_base');
+    const adicionalPericulosidadeDisplay = document.getElementById('adicional_periculosidade_display');
+    const adicionalNoturnoDisplay = document.getElementById('adicional_noturno_display');
+    
+    // Formatar inputs como valores monetários
+    const inputsMonetarios = [
+        salarioBaseInput,
+        document.getElementById('vale_transporte'),
+        document.getElementById('vale_alimentacao')
+    ];
+    
+    function formatarValorMonetario(input) {
+        let valor = input.value.replace(/\D/g, '');
+        valor = (parseFloat(valor) / 100).toFixed(2).replace('.', ',');
+        input.value = valor;
+    }
+    
+    // Formatar valores para exibição
+    function formatarValorExibicao(valor) {
+        return valor.toFixed(2).replace('.', ',');
+    }
+    
+    // Eventos para formatar ao sair do campo
+    inputsMonetarios.forEach(input => {
+        input.addEventListener('blur', function() {
+            formatarValorMonetario(this);
+            atualizarAdicionais();
+        });
+    });
+    
+    // Atualizar cálculo de adicionais
+    function atualizarAdicionais() {
+        const tipoVigilante = tipoVigilanteSelect.value;
+        let salarioBase = parseFloat(salarioBaseInput.value.replace(',', '.')) || 0;
+        
+        // Calcular adicional de periculosidade (30% do salário base)
+        const adicionalPericulosidade = salarioBase * 0.3;
+        adicionalPericulosidadeDisplay.value = formatarValorExibicao(adicionalPericulosidade);
+        
+        // Calcular adicional noturno (se aplicável)
+        let adicionalNoturno = 0;
+        if (tipoVigilante === 'AN' || tipoVigilante === 'NN') {
+            // 20% sobre as horas noturnas (8h diárias)
+            adicionalNoturno = (salarioBase / 30 / 8) * 8 * 0.2 * 30;
+        }
+        adicionalNoturnoDisplay.value = formatarValorExibicao(adicionalNoturno);
+    }
+    
+    // Adicionar eventos para atualizar cálculos
+    tipoVigilanteSelect.addEventListener('change', atualizarAdicionais);
+    salarioBaseInput.addEventListener('input', atualizarAdicionais);
+    
+    // Inicializar cálculos
+    atualizarAdicionais();
+});
+</script>
+{% endblock %}

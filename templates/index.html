@@ -1,0 +1,65 @@
+<!-- index.html -->
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="text-center mb-4">Sistema de Calculadoras para Notas Fiscais</h1>
+    
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5>Calculadoras de Notas Fiscais</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-3">
+                        <a href="{% url 'calcular_nota_fiscal_padrao' %}" class="btn btn-outline-primary btn-lg">
+                            <i class="fas fa-calculator"></i> Nota Fiscal - Padrão
+                            <p class="small text-muted mb-0">Cálculo de impostos (INSS, IRRF, ISSQN)</p>
+                        </a>
+                        <a href="{% url 'calcular_nota_fiscal_detalhado' %}" class="btn btn-outline-primary btn-lg">
+                            <i class="fas fa-file-invoice-dollar"></i> Nota Fiscal - Detalhada
+                            <p class="small text-muted mb-0">Cálculo com deduções (Vale Transporte/Alimentação)</p>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header bg-success text-white">
+                    <h5>Calculadoras Especializadas</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-3">
+                        <a href="{% url 'calcular_conta_vinculada' %}" class="btn btn-outline-success btn-lg">
+                            <i class="fas fa-piggy-bank"></i> Conta Vinculada
+                            <p class="small text-muted mb-0">Cálculo de provisão (30,83%) por função</p>
+                        </a>
+                        <a href="{% url 'calcular_vigilante' %}" class="btn btn-outline-success btn-lg">
+                            <i class="fas fa-user-shield"></i> Vigilantes
+                            <p class="small text-muted mb-0">Cálculo para vigilantes (armados/não-armados)</p>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="card mt-3">
+        <div class="card-header bg-info text-white">
+            <h5>Sobre o Sistema</h5>
+        </div>
+        <div class="card-body">
+            <p>Este sistema oferece calculadoras especializadas para facilitar o cálculo de valores de notas fiscais e provisões em diferentes situações:</p>
+            <ul>
+                <li><strong>Calculadora de Nota Fiscal - Padrão:</strong> Calcula os impostos básicos (INSS, IRRF, ISSQN) sobre o valor bruto.</li>
+                <li><strong>Calculadora de Nota Fiscal - Detalhada:</strong> Permite deduzir valores de Vale Transporte e Vale Alimentação antes do cálculo do INSS.</li>
+                <li><strong>Calculadora de Conta Vinculada:</strong> Calcula a provisão de 30,83% sobre os salários por função.</li>
+                <li><strong>Calculadora de Vigilantes:</strong> Calcula custos específicos de vigilantes, incluindo adicionais de periculosidade e noturno.</li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}

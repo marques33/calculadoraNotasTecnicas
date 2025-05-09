@@ -1,0 +1,34 @@
+<!-- calculadora_fiscal/templates/calculadora_fiscal/calcular_impostos.html -->
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'styles/style.css' %}">
+    <title>Calculadora de Impostos</title>
+    
+</head>
+<body>
+    <div class="container">
+        <h1>Calculadora de Impostos</h1>
+        <form method="post">
+            {% csrf_token %}
+            <label for="valor_bruto">Valor Bruto da Nota Fiscal:</label>
+            <input type="text" name="valor_bruto" required>
+            <button type="submit">Calcular Impostos</button>
+        </form>
+
+        {% if inss is not None and irrf is not None and issqn is not None %}
+            <div class="result">
+                <h2>Resultados dos Impostos</h2>
+                <p>Valor Bruto: {{ valor_bruto }}</p>
+                <p>INSS: R$ {{ inss|floatformat:2 }}</p>
+                <p>IRRF: R$ {{ irrf|floatformat:2 }}</p>
+                <p>ISSQN: R$ {{ issqn|floatformat:2 }}</p>
+            </div>
+        {% endif %}
+        <a href="{% url 'index' %}">Voltar à Página Inicial</a>
+    </div>
+</body>
+</html>

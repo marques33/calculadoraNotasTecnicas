@@ -1,0 +1,25 @@
+<!-- calculadora_fiscal/templates/calculadora_fiscal/index.html -->
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static '/styles/style.css' %}">
+    <title>Calculadora Fiscal - Página Inicial</title>
+    
+    
+</head>
+<body>
+    <div class="container">
+        <h1>Bem-vindo à Calculadora Fiscal</h1>
+        <div class="sidebar">
+            <a href="{% url 'calcular_impostos' %}">Calcular Impostos</a>
+            <a href="{% url 'calcular_conta_vinculada' %}">Calcular Conta Vinculada</a>
+        </div>
+        <div class="content">
+            <p>Selecione uma opção no menu lateral para começar.</p>
+        </div>
+    </div>
+</body>
+</html>
